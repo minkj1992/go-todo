@@ -80,30 +80,26 @@
 	 */
 	// TODO 저장
 	Store.prototype.save = function (updateData, callback, id) {
-		var todos = JSON.parse(localStorage.getItem(this._dbName));
-
 		callback = callback || function() {};
 
 		// If an ID was actually given, find the item and update each property
 		if (id) {
-			for (var i = 0; i < todos.length; i++) {
-				if (todos[i].id === id) {
-					for (var key in updateData) {
-						todos[i][key] = updateData[key];
-					}
-					break;
+			$http("/api/todos", "put", { ...updateData, id }, function (err, res) {
+				if (err) {
+				  throw err
 				}
-			}
-
-			localStorage.setItem(this._dbName, JSON.stringify(todos));
-			callback.call(this, todos);
+		  
+				callback.call(this, [res.data])
+			  })
 		} else {
 			// Generate an ID
 			updateData.id = new Date().getTime();
-
-			todos.push(updateData);
-			localStorage.setItem(this._dbName, JSON.stringify(todos));
-			callback.call(this, [updateData]);
+			$http("/api/todos", "post", updateData, function (err, res) {
+				if (err) {
+				  throw err
+				}		  
+				callback.call(this, [res.data])
+			  })
 		}
 	};
 
