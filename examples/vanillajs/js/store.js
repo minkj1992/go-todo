@@ -37,6 +37,7 @@
 	 *	 // hello: world in their properties
 	 * });
 	 */
+	// TODO 검색
 	Store.prototype.find = function (query, callback) {
 		if (!callback) {
 			return;
@@ -59,9 +60,15 @@
 	 *
 	 * @param {function} callback The callback to fire upon retrieving data
 	 */
+	// 전체 TODO 조회
 	Store.prototype.findAll = function (callback) {
-		callback = callback || function () {};
-		callback.call(this, JSON.parse(localStorage.getItem(this._dbName)));
+		// path, method, data, callback
+		$http("/api/todos", "get", null, function (err, res){
+			if (err) {
+				throw err
+			}
+			callback.call(this, res.data)
+		})
 	};
 
 	/**
@@ -72,6 +79,7 @@
 	 * @param {function} callback The callback to fire after saving
 	 * @param {number} id An optional param to enter an ID of an item to update
 	 */
+	// TODO 저장
 	Store.prototype.save = function (updateData, callback, id) {
 		var todos = JSON.parse(localStorage.getItem(this._dbName));
 
@@ -106,6 +114,7 @@
 	 * @param {number} id The ID of the item you want to remove
 	 * @param {function} callback The callback to fire after saving
 	 */
+	// TODO 삭제
 	Store.prototype.remove = function (id, callback) {
 		var todos = JSON.parse(localStorage.getItem(this._dbName));
 
