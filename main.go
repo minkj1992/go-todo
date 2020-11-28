@@ -1,11 +1,20 @@
 package main
 
-import "net/http"
+import (
+	"encoding/json"
+	"fmt"
+	"net/http"
+)
 
 func main() {
 	baseFrontDir := "examples/vanillajs"
-	// simple static server
-	// https://jeonghwan-kim.github.io/dev/2019/02/07/go-net-http.html
-	http.ListenAndServe(":3000", http.FileServer(http.Dir(baseFrontDir)))
-
+	db := []Todo{}
+	db = append(db, Todo{1, "todo1", false})
+	http.HandleFunc("/api/todos", func(rw http.ResponseWriter, r *http.Request) {
+		enc := json.NewEncoder(rw)
+		enc.Encode(&db)
+	})
+	http.Handle("/", http.FileServer(http.Dir(baseFrontDir)))
+	fmt.Println("server is running http://localhost:3000")
+	http.ListenAndServe(":3000", nil)
 }

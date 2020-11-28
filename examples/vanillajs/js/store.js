@@ -62,12 +62,11 @@
 	 */
 	// 전체 TODO 조회
 	Store.prototype.findAll = function (callback) {
-		// path, method, data, callback
 		$http("/api/todos", "get", null, function (err, res){
 			if (err) {
 				throw err
 			}
-			callback.call(this, res.data)
+			callback.call(this, res.data);
 		})
 	};
 

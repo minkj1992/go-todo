@@ -1,33 +1,4 @@
 /*global NodeList */
-
-window.$http = function (path, method, data, callback) {
-	// xhr object는 pool로 쓰이기도 한다.
-	// 실제로, XMLHttpRequest 인스턴스는 함수 내의 지역 변수로 선언하는 것을 권장합니다.
-	var req = new XMLHttpRequest()
-  
-	req.open(method, path, true)
-  	
-	req.onreadystatechange = () => {
-		// 4 means fully-Completed(데이터 전부 받은 상태)
-	  if (req.readyState === 4) {
-		if (req.status === 200) {
-		  try {
-			req.data = JSON.parse(req.responseText)
-			callback(null, req)
-		  } catch (err) {
-			console.log(err)
-			callback(Error("$http response parse error"))
-		  }
-		} else {
-		  callback(Error("$http request error"))
-		}
-	  }
-	}
-  
-	req.send(JSON.stringify(data))
-  }
-  
-
 (function (window) {
 	'use strict';
 
@@ -78,4 +49,32 @@ window.$http = function (path, method, data, callback) {
 	// Allow for looping on nodes by chaining:
 	// qsa('.foo').forEach(function () {})
 	NodeList.prototype.forEach = Array.prototype.forEach;
+
+	window.$http = function (path, method, data, callback) {
+		// xhr object는 pool로 쓰이기도 한다.
+		// 실제로, XMLHttpRequest 인스턴스는 함수 내의 지역 변수로 선언하는 것을 권장합니다.
+		var req = new XMLHttpRequest()
+	  
+		req.open(method, path, true)
+		  
+		req.onreadystatechange = () => {
+			// 4 means fully-Completed(데이터 전부 받은 상태)
+		  if (req.readyState === 4) {
+			if (req.status === 200) {
+			  try {
+				req.data = JSON.parse(req.responseText)
+				callback(null, req)
+			  } catch (err) {
+				console.log(err)
+				callback(Error("$http response parse error"))
+			  }
+			} else {
+			  callback(Error("$http request error"))
+			}
+		  }
+		}
+	  
+		req.send(JSON.stringify(data))
+	  }
+	  
 })(window);
