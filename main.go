@@ -1,20 +1,43 @@
 package main
 
 import (
-	"encoding/json"
-	"fmt"
 	"net/http"
+	"strconv"
 )
 
 func main() {
 	baseFrontDir := "examples/vanillajs"
-	db := []Todo{}
-	db = append(db, Todo{1, "todo1", false})
-	http.HandleFunc("/api/todos", func(rw http.ResponseWriter, r *http.Request) {
-		enc := json.NewEncoder(rw)
-		enc.Encode(&db)
+	a := NewApplication()
+	s := NewStore()
+
+	a.Get("/api/todos", func(rw http.ResponseWriter, r *http.Request) {
+		Json(rw, s.FindAll())
 	})
-	http.Handle("/", http.FileServer(http.Dir(baseFrontDir)))
-	fmt.Println("server is running http://localhost:3000")
-	http.ListenAndServe(":3000", nil)
+
+	a.Post("/api/todos", func(rw http.ResponseWriter, r *http.Request) {
+		var t Todo
+		Bind(r, &t)
+		s.Create(t)
+		Json(rw, s.FindAll())
+	})
+
+	a.Delete("/api/todos", func(rw http.ResponseWriter, r *http.Request) {
+		id, err := strconv.Atoi(QueryParam(r, "id"))
+		if err != nil {
+			panic(err)
+		}
+		s.Destroy(id)
+		Json(rw, s.FindAll())
+	})
+
+	a.Put("/api/todos", func(rw http.ResponseWriter, r *http.Request) {
+		var t Todo
+		Bind(r, &t)
+		s.Update(t)
+		Json(rw, s.FindAll())
+	})
+
+	a.Static(baseFrontDir)
+
+	a.Start(":3000")
 }

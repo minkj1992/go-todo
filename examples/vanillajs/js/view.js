@@ -29,7 +29,6 @@
 
 	View.prototype._removeItem = function (id) {
 		var elem = qs('[data-id="' + id + '"]');
-
 		if (elem) {
 			this.$todoList.removeChild(elem);
 		}

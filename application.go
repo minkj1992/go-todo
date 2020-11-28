@@ -1,6 +1,8 @@
 package main
 
 import (
+	"encoding/json"
+	"fmt"
 	"net/http"
 	"regexp"
 )
@@ -55,6 +57,32 @@ func (a *Application) ServeHTTP(rw http.ResponseWriter, r *http.Request) {
 			return
 		}
 	}
-
 	http.NotFound(rw, r)
+}
+
+func (a *Application) Static(root string) {
+	fs := http.FileServer(http.Dir(root))
+	a.Add(http.MethodGet, "/*", fs)
+}
+
+func (a *Application) Start(port string) {
+	fmt.Println("server is running http://localhost" + port)
+	http.ListenAndServe(port, a)
+}
+
+func NewApplication() *Application {
+	return &Application{}
+}
+
+func Bind(r *http.Request, i interface{}) {
+	json.NewDecoder(r.Body).Decode(i)
+}
+
+func QueryParam(r *http.Request, key string) string {
+	return r.URL.Query().Get(key)
+}
+
+func Json(rw http.ResponseWriter, i interface{}) {
+	enc := json.NewEncoder(rw)
+	enc.Encode(&i)
 }
